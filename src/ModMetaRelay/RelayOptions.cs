@@ -4,6 +4,6 @@ namespace ModMetaRelay
 {
     public class RelayOptions
     {
-        public List<string> Plugins {get;set;} = new List<string>();
+        public List<string> PluginPaths {get;set;} = new List<string>();
     }
 }

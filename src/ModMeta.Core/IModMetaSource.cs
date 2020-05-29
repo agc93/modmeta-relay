@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ModMeta.Core
@@ -17,13 +18,13 @@ namespace ModMeta.Core
         string DefaultGameId {get;}
         LookupType SupportedTypes {get;}
         Task<IEnumerable<ILookupResult>> GetByReference(IReference reference);
-        Task<IEnumerable<ILookupResult>> GetByKey(string hashKey, string gameId = null);
+        Task<IEnumerable<ILookupResult>> GetByKey(string hashKey);
         Task<IEnumerable<ILookupResult>> GetByLogicalName(string logicalName, VersionMatch versionMatch);
         Task<IEnumerable<ILookupResult>> GetByExpression(string fileExpression, VersionMatch versionMatch);
         Task<IEnumerable<IModInfo>> GetAllMods();
     }
 
-    public interface IModMetaSourceFactory {
-        IServiceCollection ConfigureServices(IServiceCollection services);
+    public interface IModMetaPlugin {
+        IServiceCollection ConfigureServices(IServiceCollection services, IConfiguration configuration);
     }
 }

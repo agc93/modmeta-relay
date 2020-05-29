@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using McMaster.NETCore.Plugins;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ModMeta.Core;
@@ -11,9 +12,15 @@ namespace ModMetaRelay
 {
     public static class StartupExtensions
     {
-        internal static IServiceCollection AddPlugins(this IServiceCollection services) {
-            var opts = services.BuildServiceProvider().GetService<IOptions<RelayOptions>>();
+        internal static IServiceCollection AddPlugins(this IServiceCollection services, IConfiguration configuration) {
+            var opts = configuration
+                .GetSection("Relay")
+                .Get<RelayOptions>();
+            // var opts = services.BuildServiceProvider().GetService<IOptions<RelayOptions>>();
             var loaders = GetPluginLoaders();
+            if (opts.PluginPaths.Any()) {
+                loaders = loaders.Concat(opts.PluginPaths.SelectMany(p => GetPluginLoaders(p)));
+            }
             // Create an instance of plugin types
             foreach (var loader in loaders)
             {
@@ -22,9 +29,9 @@ namespace ModMetaRelay
                     foreach (var pluginType in types.Where(IsFactory))
                     {
                         // This assumes the implementation of IPluginFactory has a parameterless constructor
-                        var plugin = Activator.CreateInstance(pluginType) as IModMetaSourceFactory;
+                        var plugin = Activator.CreateInstance(pluginType) as IModMetaPlugin;
 
-                        plugin?.ConfigureServices(services);
+                        plugin?.ConfigureServices(services, configuration);
                     }
                 } else {
                     foreach (var sourceType in types.Where(IsSource))
@@ -39,10 +46,11 @@ namespace ModMetaRelay
             return services;
         }
 
-        private static IEnumerable<PluginLoader> GetPluginLoaders() {
+        private static IEnumerable<PluginLoader> GetPluginLoaders(string pluginSearchPath = null) {
             var loaders = new List<PluginLoader>();
             // create plugin loaders
-            var pluginsDir = Path.Combine(AppContext.BaseDirectory, "plugins");
+            var pluginsDir = pluginSearchPath ?? Path.Combine(AppContext.BaseDirectory, "plugins");
+            Console.WriteLine($"Loading all plugins from {pluginsDir}");
             foreach (var dir in Directory.GetDirectories(pluginsDir))
             {
                 var dirName = Path.GetFileName(dir);
@@ -51,7 +59,7 @@ namespace ModMetaRelay
                 {
                     var loader = PluginLoader.CreateFromAssemblyFile(
                         pluginDll,
-                        sharedTypes: new[] { typeof(IModMetaSourceFactory), typeof(IServiceCollection) });
+                        sharedTypes: new[] { typeof(IModMetaPlugin), typeof(IServiceCollection) });
                     loaders.Add(loader);
                 }
             }
@@ -60,7 +68,7 @@ namespace ModMetaRelay
         }
 
         internal static bool IsFactory(this Type t) {
-            return typeof(IModMetaSourceFactory).IsAssignableFrom(t) && !t.IsAbstract;
+            return typeof(IModMetaPlugin).IsAssignableFrom(t) && !t.IsAbstract;
         }
 
         internal static bool IsSource(this Type t) {

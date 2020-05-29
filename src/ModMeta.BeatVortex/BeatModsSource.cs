@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ModMeta.Core;
 using SemVer;
@@ -11,7 +12,7 @@ using Version = SemVer.Version;
 namespace ModMeta.BeatVortex
 {
     // [Plugin(PluginType = typeof(IModMetaSource))]
-    public class BeatModsSource : IModMetaSource, IModMetaSourceFactory
+    public class BeatModsSource : IModMetaSource, IModMetaPlugin
     {
         private readonly BeatModsClient _client;
 
@@ -28,10 +29,11 @@ namespace ModMeta.BeatVortex
 
         public string DefaultGameId => "beatsaber";
 
-        public LookupType SupportedTypes => LookupType.FileExpression|LookupType.LogicalName;
+        public LookupType SupportedTypes => LookupType.LogicalName;
 
-        public IServiceCollection ConfigureServices(IServiceCollection services)
+        public IServiceCollection ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            
             services.AddSingleton<BeatModsClient>();
             services.AddSingleton<IModMetaSource, BeatModsSource>();
             return services;
@@ -48,7 +50,7 @@ namespace ModMeta.BeatVortex
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ILookupResult>> GetByKey(string hashKey, string gameId = null)
+        public Task<IEnumerable<ILookupResult>> GetByKey(string hashKey)
         {
             throw new NotImplementedException();
         }

@@ -29,7 +29,7 @@ namespace ModMetaRelay
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<RelayOptions>(Configuration.GetSection("Relay"));
-            services.AddPlugins();
+            services.AddPlugins(Configuration);
             // services.AddSingleton<IModMetaSource, ModMeta.BeatVortex.BeatModsSource>();
             services
                 .AddControllers()
