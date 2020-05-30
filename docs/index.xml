@@ -1,0 +1,143 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ModMeta Relay – Documentation</title><link>/docs/</link><description>Recent content in Documentation on ModMeta Relay</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: ModMeta Basics</title><link>/docs/introduction/basics/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/introduction/basics/</guid><description>
+&lt;p>The ModMeta API is a simple REST API that at its most basic is an API for providing extended information about mods.&lt;/p>
+&lt;p>More specifically, ModMeta APIs (aka Metaservers) are used to provide additional information and attributes for specific mods based on details of the mod file itself. They do &lt;strong>not&lt;/strong> serve mods, nor make them discoverable, but are specifically for providing metadata for a mod file that a consuming client (Vortex, for example) already knows about.&lt;/p>
+&lt;h3 id="modmeta-db">&lt;code>modmeta-db&lt;/code>&lt;/h3>
+&lt;p>While we refer to it as the &amp;ldquo;ModMeta API&amp;rdquo;, it's not exactly that formalized. The &amp;ldquo;API&amp;rdquo; is just the API surfaced by &lt;code>modmeta-db&lt;/code>, the library that Vortex uses to fetch metadata from Nexus Mods and any other configured metaservers.&lt;/p>
+&lt;p>The ModMeta DB is both a client and server implementation that serves metadata from a local database or the Nexus Mods API (by default). If you're just looking for a basic working implementation of the ModMeta pattern, then &lt;code>modmeta-db&lt;/code> is the server for you.&lt;/p>
+&lt;h3 id="modmeta-relay">ModMeta Relay&lt;/h3>
+&lt;p>So what's different about the Relay server? ModMeta Relay intends to be an extensible and configurable server that can provide a ModMeta-compatible API to any other non-Nexus metadata source.&lt;/p>
+&lt;p>ModMeta Relay doesn't provide any metadata itself! The Relay server does the basics of handling the REST API specifics, query binding and basic validation etc. The actual metadata comes from &lt;strong>plugins&lt;/strong> that the server loads, using a ModMeta-like API. Those plugins can then load metadata from a file, database, API or cache and the Relay server will return the results.&lt;/p></description></item><item><title>Docs: Relay Plugins</title><link>/docs/introduction/plugins/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/introduction/plugins/</guid><description>
+&lt;p>The ModMeta Relay server doesn't store or serve &lt;em>any&lt;/em> mod metadata. All the metadata that it returns to clients comes from the currently loaded &lt;strong>plugins&lt;/strong>.&lt;/p>
+&lt;p>When the Relay server starts up, it will automatically load all the installed plugins (see below) and use them as metadata sources to respond to incoming requests. For each request, the server will query &lt;em>all&lt;/em> the available plugins so it's possible for a single request to return multiple different metadata records.&lt;/p>
+&lt;p>Plugins can selectively support only parts of the ModMeta API if the source they represent doesn't support it, for example.&lt;/p>
+&lt;h2 id="plugin-loading">Plugin Loading&lt;/h2>
+&lt;p>Plugins are automatically loaded (by default) from a &lt;code>Plugins/&lt;/code> directory in the application root. Plugins must be located in a directory under &lt;em>Plugins&lt;/em> with the same name as the plugin assembly (without the &lt;code>.dll&lt;/code>). Each plugin can add one or more metadata sources and the server will automatically load all of them and use them to retrieve metadata from requests.&lt;/p></description></item><item><title>Docs: Frequently Asked Questions</title><link>/docs/introduction/faq/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/introduction/faq/</guid><description>
+&lt;p>Below is a collection of frequent questions and the best answers I can give.&lt;/p>
+&lt;h3 id="why-should-i-use-this">Why should I use this?&lt;/h3>
+&lt;p>If your integration/extension/game/mod are using Vortex and mods hosted on Nexus Mods, you probably don't need this! ModMeta Relay is specifically intended at making it easier to support non-Nexus mod sources with metadata for Vortex (or any other ModMeta client).&lt;/p>
+&lt;h3 id="why-not-just-use-modmeta-db">Why not just use modmeta-db?&lt;/h3>
+&lt;p>Use what you prefer! I was looking for something a little less structured/opinionated than the basic &lt;code>modmeta-db&lt;/code>, so designed this as an alternative.&lt;/p>
+&lt;p>Ideally, from a client's point of view, it shouldn't even be obvious whether your metaserver is using &lt;code>modmeta-db&lt;/code> or the ModMeta Relay.&lt;/p>
+&lt;h3 id="how-do-i-get-modmeta-relay-to-use-metadata-from-x">How do I get ModMeta relay to use metadata from &lt;x>?&lt;/h3>
+&lt;p>Unless you know there's already a plugin for the source in question, you will probably need to build one. This is a reasonably simple process and the server should pick up any available plugins at startup.&lt;/p>
+&lt;p>There's a ton of docs on building for/with Relay in &lt;a href="../docs/developer">the developer docs&lt;/a>.&lt;/p>
+&lt;h3 id="why-are-there-so-many-references-to-beat-saberbeatvortex-in-here">Why are there so many references to Beat Saber/BeatVortex in here?&lt;/h3>
+&lt;p>Just like how &lt;code>modmeta-db&lt;/code> was born out of the Vortex project but is now a separate component, ModMeta Relay was originally a component of BeatVortex until I realised it could be split out as a game- and source-agnostic metadata server. In particular, the BeatVortex plugin is still currently part of this repository, but will be moved at a later date.&lt;/p></description></item><item><title>Docs: Running the Relay server</title><link>/docs/usage/installation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/usage/installation/</guid><description>
+&lt;h2 id="installing-modmeta-relay">Installing ModMeta Relay&lt;/h2>
+&lt;p>There's a couple of ways of running ModMeta Relay at present.&lt;/p>
+&lt;h3 id="docker">Docker&lt;/h3>
+&lt;p>We automatically build and publish a Docker image for tagged versions to &lt;code>quay.io/modmeta-relay/server&lt;/code>. To run the server locally, or on any supported Docker host:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run -d -p &amp;lt;external-port-here&amp;gt;:80 -v /path/to/your/plugins:/app/plugins quay.io/modmeta-relay/server:&amp;lt;your-version-here&amp;gt;
+&lt;span style="color:#8f5902;font-style:italic"># for example&lt;/span>
+docker run -d -p 8080:80 -v /tmp/modmeta-plugins:/app/plugins quay.io/modmeta-relay/server:0.1.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The server will be immediately ready to serve mod requests at whatever port you bound to port 80.&lt;/p>
+&lt;blockquote>
+&lt;p>Remember that without any plugins available, the server will still run, but will never return any results!&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="native-packages">Native Packages&lt;/h3>
+&lt;p>We also publish native builds for Windows and Linux through &lt;a href="https://github.com/agc93/modmeta-relay/releases">GitHub Releases&lt;/a>. Find the release you want to use, download the correct &lt;code>.zip&lt;/code> for your platform and extract it somewhere. Create a &lt;code>Plugins&lt;/code> directory and drop in your plugins, and run &lt;code>ModMetaRelay&lt;/code>/&lt;code>ModMetaRelay.exe&lt;/code> to start the server. You can change the listening port in &lt;code>appSettings.json&lt;/code>, by adding a new key to the configuration:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#4e9a06">&amp;#34;urls&amp;#34;&lt;/span>&lt;span style="color:#a40000">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;https://0.0.0.0:8888&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="ci-or-local-builds">CI or Local Builds&lt;/h3>
+&lt;p>If you have the .NET Core runtime already installed, you can use the &lt;code>dotnet-any&lt;/code> builds available from the &lt;a href="https://github.com/agc93/modmeta-relay/actions">CI builds&lt;/a>. Simply download the &lt;code>modmeta-relay&lt;/code> artifact from a build and run &lt;code>dotnet ModMetRelay.dll&lt;/code> from the &lt;code>dotnet-any&lt;/code> directory.&lt;/p>
+&lt;p>If you have the SDK installed, you can build your own pretty easily by cloning the repo and running the following:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">dotnet tool restore
+dotnet cake --bootstrap
+dotnet cake --target&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>Publish
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This will quickly build all the installation variants locally, into the &lt;code>dist/&lt;/code> folder.&lt;/p></description></item><item><title>Docs: Adding Plugins</title><link>/docs/usage/plugins/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/usage/plugins/</guid><description>
+&lt;h2 id="modmeta-plugins">ModMeta Plugins&lt;/h2>
+&lt;p>If you run the ModMeta Relay server without any plugins configured, you will never get any results! Plugins are responsible for getting mod metadata from whatever source(s) they support.&lt;/p>
+&lt;h2 id="installing-plugins">Installing Plugins&lt;/h2>
+&lt;p>There's no special process for &amp;ldquo;installing&amp;rdquo; plugins or registering them to the server. Simply place them in a &lt;code>Plugins/&lt;/code> directory beside the server binary and the server will automatically load them. Plugins must be in a &lt;em>directory&lt;/em> named the same as the plugin. For example:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">win-x64
+├── appsettings.Development.json
+├── appsettings.json
+├── ModMetaRelay.exe
+├── ModMetaRelay.pdb
+└── Plugins
+└── ModMeta.BeatVortex
+├── ModMeta.BeatVortex.dll
+├── ModMeta.BeatVortex.deps.json
+...
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>Plugins are loaded only when the server starts! If you've added new plugins, make sure you restart the server to load them.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="plugin-loading">Plugin Loading&lt;/h3>
+&lt;p>If your plugin doesn't seem to be loading with the server, make sure you check the output/logs. During startup the server will log the locations of plugins it has discovered as well as the paths it is searching.&lt;/p>
+&lt;h2 id="plugin-configuration">Plugin Configuration&lt;/h2>
+&lt;p>The Relay server picks up it's configuration from the &lt;code>appSettings.json&lt;/code> file in the app directory. If you need to put your plugins in a different location, you can add extra paths for plugins using the &lt;code>PluginPaths&lt;/code> option:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#a40000">.&lt;/span>&lt;span style="color:#a40000">.&lt;/span>&lt;span style="color:#a40000">.&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;Relay&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;PluginPaths&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;/additional/path/to/plugins&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#a40000">.&lt;/span>&lt;span style="color:#a40000">.&lt;/span>&lt;span style="color:#a40000">.&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="docker">Docker&lt;/h3>
+&lt;p>The Docker image does not include &lt;em>any&lt;/em> plugins by default. You need to include your plugins either using a custom &lt;code>Dockerfile&lt;/code> or by simply mounting a plugins folder to the &lt;code>/app/plugins/&lt;/code> directory in your container:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#8f5902;font-style:italic"># for example&lt;/span>
+docker run -d -p 8080:80 -v /tmp/modmeta-plugins:/app/plugins quay.io/modmeta-relay/server:0.1.0
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docs: Configuring Metaserver Clients</title><link>/docs/usage/vortex/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/usage/vortex/</guid><description>
+&lt;h2 id="metaserver-clients">Metaserver Clients&lt;/h2>
+&lt;p>Technically, any client that supports the ModMeta API can use the Relay server to fetch metadata.&lt;/p>
+&lt;p>Currently, Vortex is the only known client to use ModMeta to gather metadata on mods. Other clients will have their own configuration requirements.&lt;/p>
+&lt;h2 id="vortex-configuration">Vortex Configuration&lt;/h2>
+&lt;p>Metaservers can be added to Vortex through two methods: the Settings menu and extensions.&lt;/p>
+&lt;h3 id="settings">Settings&lt;/h3>
+&lt;p>To add a new metaserver to Vortex, launch the Settings pane from the sidebar and open the &amp;ldquo;Download&amp;rdquo; tab. You'll see a button near the bottom to &amp;ldquo;Add a Metaserver&amp;rdquo;. Enter the URL of your Relay server and press the tick button on the right hand side to save your new server.&lt;/p>
+&lt;p>The next time Vortex installs a mod, it will query your new metaserver for any metadata about the mod being installed.&lt;/p>
+&lt;blockquote>
+&lt;p>By default, Vortex will only query for metadata using the file key/hash. You can read more about the different requests in &lt;a href="../docs/developer/modmeta">the developer docs&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="extensions">Extensions&lt;/h3>
+&lt;p>Extension authors can programmatically add a companion metaserver using the standard &lt;code>IExtensionContext&lt;/code> object that your extension uses:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-typescript" data-lang="typescript">&lt;span style="color:#204a87;font-weight:bold">function&lt;/span> &lt;span style="color:#000">main&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">context&lt;/span> : &lt;span style="color:#204a87;font-weight:bold">IExtensionContext&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>
+&lt;span style="color:#000">context&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">once&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#000">context&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">api&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">addMetaServer&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;metaserver-id&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span> &lt;span style="color:#000">url&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;https://your-meta.server.com&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">}&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docs: ModMeta API</title><link>/docs/developer/modmeta/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/developer/modmeta/</guid><description>
+&lt;p>For plugin authors, the most important things to know about the ModMeta API are the request types and version matching.&lt;/p>
+&lt;h3 id="request-types">Request Types&lt;/h3>
+&lt;h4 id="key-by_key">Key (&lt;code>by_key&lt;/code>)&lt;/h4>
+&lt;p>This is the &amp;ldquo;default&amp;rdquo; request used by Vortex, and the only request supported by Nexus Mods. It's also the simplest and requests metadata using a single key: the MD5 hash of the mod archive file. This is super useful for mod sources that store a hash as it's fast, unique and simple.&lt;/p>
+&lt;h4 id="logical-file-name-by_name">Logical File Name (&lt;code>by_name&lt;/code>)&lt;/h4>
+&lt;p>This is the next-best request, not as specific as file key, but not as vague or intensive as expression. Technically speaking, the logical file name is just a string, but it's usually a string that's semantically important to the mod, such as a unique name for a specific variant of a file.&lt;/p>
+&lt;blockquote>
+&lt;p>Logical file name lookups also use version matching&lt;/p>
+&lt;/blockquote>
+&lt;h4 id="file-expression-by_expression">File Expression (&lt;code>by_expression&lt;/code>)&lt;/h4>
+&lt;p>File expressions are, essentially, glob patterns. That makes them very flexible and able to work with practically any file/mod format, but also fragile and intensive to look up, so they are considered a last-ditch option for when the other two are not possible.&lt;/p>
+&lt;blockquote>
+&lt;p>File expression lookups also use version matching&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="version-matching">Version Matching&lt;/h3>
+&lt;p>Lookups using logical file name or file expression also use a version string to match specific versions of a file. Version matches are not (necessarily) an exact match and are best specified as a version range.&lt;/p>
+&lt;p>If you've used Node/&lt;code>npm&lt;/code> and it's version semantics before, that's how &lt;code>modmeta-db&lt;/code> does its version matching. ModMeta Relay tries to match that as closely as possible, but for those curious, existing plugins are using &lt;a href="https://github.com/adamreeve/semver.net">semver.net (Sematnic Versioning for .NET)&lt;/a> for version matching.&lt;/p>
+&lt;p>The actual implementation of matching version strings with mod package/file versions is up to plugins, but should always be as specific as practical since returning too many results for a mod can result in conflicting metadata.&lt;/p></description></item><item><title>Docs: Building Plugins</title><link>/docs/developer/plugins/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/developer/plugins/</guid><description>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>At their most basic, a Relay plugin is simply an assembly with an implementation of &lt;code>IModMetaSource&lt;/code> (from &lt;code>ModMeta.Core&lt;/code>), and optionally an implementation of &lt;code>IModMetaPlugin&lt;/code>.&lt;/p>
+&lt;p>The &lt;code>IModMetaSource&lt;/code> interface is how the Relay server passes mod metadata queries to your plugin and handles the responses to pass on to the original client.&lt;/p>
+&lt;h2 id="implementing-a-metadata-source">Implementing a metadata source&lt;/h2>
+&lt;p>In short, add a reference to &lt;code>ModMeta.Core&lt;/code> and implement the &lt;code>IModMetaSource&lt;/code> interface. The various &lt;code>GetBy*&lt;/code> methods are the main entry points the server will call when it gets a request for a mod.&lt;/p>
+&lt;h3 id="request-type-support">Request Type Support&lt;/h3>
+&lt;p>Since not every &lt;a href="../docs/developer/modmeta/#request-types">request type&lt;/a> might make sense for the metadata source you're building, plugins can choose to only work with certain request types.&lt;/p>
+&lt;p>If your plugin doesn't support a request type &lt;em>at all&lt;/em>, not returning it from the &lt;code>SupportedTypes&lt;/code> property will cause the server to never even call your plugin for that type. If you only want to skip &lt;em>certain&lt;/em> requests, throwing a &lt;code>NotImplementedException&lt;/code> will cause the server to ignore your plugin's results for that request.&lt;/p>
+&lt;h3 id="async-and-timeouts">Async and timeouts&lt;/h3>
+&lt;p>All configured plugins are called by the server at the same time for each request. If you're familiar with the TPL, we're currently using &lt;code>Task.WhenAll()&lt;/code> so your plugin will &lt;em>not&lt;/em> be running in a different thread. To keep UX non-awful, there's a hard limit configured of 5 seconds after which any plugins that haven't returned their results are ignored. Given metaservers calls often block installation (as they do in Vortex), making your plugin return data as fast as possible will lead to a much better experience.&lt;/p>
+&lt;h2 id="complex-plugins-and-imodmetaplugin">Complex Plugins and &lt;code>IModMetaPlugin&lt;/code>&lt;/h2>
+&lt;p>If your mod has more advanced requirements or you want to take advantage of runtime DI, you can register your plugin using an implementation of &lt;code>IModMetaPlugin&lt;/code>. Much like a metadata source (&lt;code>IModMetaSource&lt;/code>), the server will dynamically load your plugin and locate your implementation of &lt;code>IModMetaPlugin&lt;/code>.&lt;/p>
+&lt;blockquote>
+&lt;p>If you use &lt;code>IModMetaPlugin&lt;/code>, the server will &lt;em>not&lt;/em> automatically register your &lt;code>IModMetaSource&lt;/code> implementation, you need to do that yourself in the &lt;code>ConfigureServices&lt;/code> method.&lt;/p>
+&lt;/blockquote>
+&lt;p>Using the &lt;code>IModMetaPlugin.ConfigureServices&lt;/code> method, you can register any dependencies you need, read configuration or resolve extra services from the DI container of the host serve. For example:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#204a87;font-weight:bold">public&lt;/span> &lt;span style="color:#000">IServiceCollection&lt;/span> &lt;span style="color:#000">ConfigureServices&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">IServiceCollection&lt;/span> &lt;span style="color:#000">services&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">IConfiguration&lt;/span> &lt;span style="color:#000">configuration&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#000">services&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">AddSingleton&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#000">BeatModsClient&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">services&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">AddSingleton&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#000">IModMetaSource&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">BeatModsSource&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;gt;&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">return&lt;/span> &lt;span style="color:#000">services&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>

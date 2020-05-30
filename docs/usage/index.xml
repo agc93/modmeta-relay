@@ -1,0 +1,78 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ModMeta Relay – Usage</title><link>/docs/usage/</link><description>Recent content in Usage on ModMeta Relay</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/usage/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Running the Relay server</title><link>/docs/usage/installation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/usage/installation/</guid><description>
+&lt;h2 id="installing-modmeta-relay">Installing ModMeta Relay&lt;/h2>
+&lt;p>There's a couple of ways of running ModMeta Relay at present.&lt;/p>
+&lt;h3 id="docker">Docker&lt;/h3>
+&lt;p>We automatically build and publish a Docker image for tagged versions to &lt;code>quay.io/modmeta-relay/server&lt;/code>. To run the server locally, or on any supported Docker host:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run -d -p &amp;lt;external-port-here&amp;gt;:80 -v /path/to/your/plugins:/app/plugins quay.io/modmeta-relay/server:&amp;lt;your-version-here&amp;gt;
+&lt;span style="color:#8f5902;font-style:italic"># for example&lt;/span>
+docker run -d -p 8080:80 -v /tmp/modmeta-plugins:/app/plugins quay.io/modmeta-relay/server:0.1.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The server will be immediately ready to serve mod requests at whatever port you bound to port 80.&lt;/p>
+&lt;blockquote>
+&lt;p>Remember that without any plugins available, the server will still run, but will never return any results!&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="native-packages">Native Packages&lt;/h3>
+&lt;p>We also publish native builds for Windows and Linux through &lt;a href="https://github.com/agc93/modmeta-relay/releases">GitHub Releases&lt;/a>. Find the release you want to use, download the correct &lt;code>.zip&lt;/code> for your platform and extract it somewhere. Create a &lt;code>Plugins&lt;/code> directory and drop in your plugins, and run &lt;code>ModMetaRelay&lt;/code>/&lt;code>ModMetaRelay.exe&lt;/code> to start the server. You can change the listening port in &lt;code>appSettings.json&lt;/code>, by adding a new key to the configuration:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#4e9a06">&amp;#34;urls&amp;#34;&lt;/span>&lt;span style="color:#a40000">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;https://0.0.0.0:8888&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="ci-or-local-builds">CI or Local Builds&lt;/h3>
+&lt;p>If you have the .NET Core runtime already installed, you can use the &lt;code>dotnet-any&lt;/code> builds available from the &lt;a href="https://github.com/agc93/modmeta-relay/actions">CI builds&lt;/a>. Simply download the &lt;code>modmeta-relay&lt;/code> artifact from a build and run &lt;code>dotnet ModMetRelay.dll&lt;/code> from the &lt;code>dotnet-any&lt;/code> directory.&lt;/p>
+&lt;p>If you have the SDK installed, you can build your own pretty easily by cloning the repo and running the following:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">dotnet tool restore
+dotnet cake --bootstrap
+dotnet cake --target&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>Publish
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This will quickly build all the installation variants locally, into the &lt;code>dist/&lt;/code> folder.&lt;/p></description></item><item><title>Docs: Adding Plugins</title><link>/docs/usage/plugins/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/usage/plugins/</guid><description>
+&lt;h2 id="modmeta-plugins">ModMeta Plugins&lt;/h2>
+&lt;p>If you run the ModMeta Relay server without any plugins configured, you will never get any results! Plugins are responsible for getting mod metadata from whatever source(s) they support.&lt;/p>
+&lt;h2 id="installing-plugins">Installing Plugins&lt;/h2>
+&lt;p>There's no special process for &amp;ldquo;installing&amp;rdquo; plugins or registering them to the server. Simply place them in a &lt;code>Plugins/&lt;/code> directory beside the server binary and the server will automatically load them. Plugins must be in a &lt;em>directory&lt;/em> named the same as the plugin. For example:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">win-x64
+├── appsettings.Development.json
+├── appsettings.json
+├── ModMetaRelay.exe
+├── ModMetaRelay.pdb
+└── Plugins
+└── ModMeta.BeatVortex
+├── ModMeta.BeatVortex.dll
+├── ModMeta.BeatVortex.deps.json
+...
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>Plugins are loaded only when the server starts! If you've added new plugins, make sure you restart the server to load them.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="plugin-loading">Plugin Loading&lt;/h3>
+&lt;p>If your plugin doesn't seem to be loading with the server, make sure you check the output/logs. During startup the server will log the locations of plugins it has discovered as well as the paths it is searching.&lt;/p>
+&lt;h2 id="plugin-configuration">Plugin Configuration&lt;/h2>
+&lt;p>The Relay server picks up it's configuration from the &lt;code>appSettings.json&lt;/code> file in the app directory. If you need to put your plugins in a different location, you can add extra paths for plugins using the &lt;code>PluginPaths&lt;/code> option:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#a40000">.&lt;/span>&lt;span style="color:#a40000">.&lt;/span>&lt;span style="color:#a40000">.&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;Relay&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;PluginPaths&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;/additional/path/to/plugins&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#a40000">.&lt;/span>&lt;span style="color:#a40000">.&lt;/span>&lt;span style="color:#a40000">.&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="docker">Docker&lt;/h3>
+&lt;p>The Docker image does not include &lt;em>any&lt;/em> plugins by default. You need to include your plugins either using a custom &lt;code>Dockerfile&lt;/code> or by simply mounting a plugins folder to the &lt;code>/app/plugins/&lt;/code> directory in your container:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#8f5902;font-style:italic"># for example&lt;/span>
+docker run -d -p 8080:80 -v /tmp/modmeta-plugins:/app/plugins quay.io/modmeta-relay/server:0.1.0
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docs: Configuring Metaserver Clients</title><link>/docs/usage/vortex/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/usage/vortex/</guid><description>
+&lt;h2 id="metaserver-clients">Metaserver Clients&lt;/h2>
+&lt;p>Technically, any client that supports the ModMeta API can use the Relay server to fetch metadata.&lt;/p>
+&lt;p>Currently, Vortex is the only known client to use ModMeta to gather metadata on mods. Other clients will have their own configuration requirements.&lt;/p>
+&lt;h2 id="vortex-configuration">Vortex Configuration&lt;/h2>
+&lt;p>Metaservers can be added to Vortex through two methods: the Settings menu and extensions.&lt;/p>
+&lt;h3 id="settings">Settings&lt;/h3>
+&lt;p>To add a new metaserver to Vortex, launch the Settings pane from the sidebar and open the &amp;ldquo;Download&amp;rdquo; tab. You'll see a button near the bottom to &amp;ldquo;Add a Metaserver&amp;rdquo;. Enter the URL of your Relay server and press the tick button on the right hand side to save your new server.&lt;/p>
+&lt;p>The next time Vortex installs a mod, it will query your new metaserver for any metadata about the mod being installed.&lt;/p>
+&lt;blockquote>
+&lt;p>By default, Vortex will only query for metadata using the file key/hash. You can read more about the different requests in &lt;a href="../../docs/developer/modmeta">the developer docs&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="extensions">Extensions&lt;/h3>
+&lt;p>Extension authors can programmatically add a companion metaserver using the standard &lt;code>IExtensionContext&lt;/code> object that your extension uses:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-typescript" data-lang="typescript">&lt;span style="color:#204a87;font-weight:bold">function&lt;/span> &lt;span style="color:#000">main&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">context&lt;/span> : &lt;span style="color:#204a87;font-weight:bold">IExtensionContext&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>
+&lt;span style="color:#000">context&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">once&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#000">context&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">api&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">addMetaServer&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;metaserver-id&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span> &lt;span style="color:#000">url&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;https://your-meta.server.com&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">}&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
