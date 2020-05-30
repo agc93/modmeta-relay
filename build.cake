@@ -171,6 +171,22 @@ Task("Build-Linux-Packages")
 	}
 });
 
+Task("Build-NuGet-Packages")
+	.IsDependentOn("Post-Build")
+	.Does(() => 
+{
+	Information("Building NuGet packages");
+	var nupkgDir = $"{artifacts}/nuget/";
+	CreateDirectory(nupkgDir);
+	var packSettings = new DotNetCorePackSettings
+     {
+         Configuration = configuration,
+         OutputDirectory = nupkgDir,
+		 ArgumentCustomization = args => args.Append($"/p:Version={packageVersion}")
+     };
+	DotNetCorePack(solutionPath, packSettings);
+});
+
 Task("Build-Docker-Image")
 	//.WithCriteria(IsRunningOnUnix())
 	.IsDependentOn("Build-Linux-Packages")
@@ -193,6 +209,7 @@ Task("Default")
 
 Task("Publish")
 	.IsDependentOn("Build-Linux-Packages")
+	.IsDependentOn("Build-NuGet-Packages")
 	.IsDependentOn("Build-Docker-Image");
 
 RunTarget(target);

@@ -2,10 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <PackageId>ModMeta</PackageId>
     <Description>.NET Bindings for the ModMeta DB (github.com/Nexus-Mods/modmeta-db) library</Description>
     <Copyright>© Alistair Chapman</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +13,11 @@
     <PackageReference Include="SemanticVersioning" Version="1.2.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>ModMeta</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
 
 </Project>

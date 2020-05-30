@@ -17,6 +17,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <!-- <PropertyGroup Condition="'$(Configuration)'=='Release'">

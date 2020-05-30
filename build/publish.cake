@@ -11,6 +11,20 @@ Task("Publish-Docker-Image")
     DockerPush($"quay.io/modmeta-relay/server:{packageVersion}");
 });
 
+Task("Publish-NuGet-Packages")
+.IsDependentOn("Build-NuGet-Packages")
+.WithCriteria(() => !string.IsNullOrWhiteSpace(EnvironmentVariable("NUGET_TOKEN")))
+.WithCriteria(() => EnvironmentVariable("GITHUB_REF").StartsWith("refs/tags/v"))
+.Does(() => {
+    var nupkgDir = $"{artifacts}/nuget/";
+    var nugetToken = EnvironmentVariable("NUGET_TOKEN");
+    NuGetPush(GetFiles($"{nupkgDir}/*.nupkg"), new NuGetPushSettings {
+      Source = "https://api.nuget.org/v3/index.json",
+      ApiKey = nugetToken
+    });
+});
+
 Task("Release")
 .IsDependentOn("Publish")
-.IsDependentOn("Publish-Docker-Image");
+.IsDependentOn("Publish-Docker-Image")
+.IsDependentOn("Publish-NuGet-Packages");

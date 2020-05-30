@@ -15,7 +15,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <!-- <AssemblyName>ModMeta.BeatVortex.Plugin</AssemblyName> -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
 </Project>
