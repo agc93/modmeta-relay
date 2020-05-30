@@ -1,7 +1,7 @@
 ---
 title: "Building Plugins"
 linkTitle: "Plugins"
-weight: 20
+weight: 92
 description: >
   An introduction to building Relay plugins.
 ---

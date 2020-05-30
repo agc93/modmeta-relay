@@ -5,7 +5,6 @@ using System.Linq;
 using McMaster.NETCore.Plugins;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using ModMeta.Core;
 
 namespace ModMetaRelay
@@ -14,13 +13,14 @@ namespace ModMetaRelay
     {
         internal static IServiceCollection AddPlugins(this IServiceCollection services, IConfiguration configuration) {
             var opts = configuration
-                .GetSection("Relay")
-                .Get<RelayOptions>();
+                .GetSection("Relay")?
+                .Get<RelayOptions>() ?? new RelayOptions();
+            // var loaders = Enumerable.Empty<PluginLoader>();
             // var opts = services.BuildServiceProvider().GetService<IOptions<RelayOptions>>();
-            var loaders = GetPluginLoaders();
-            if (opts.PluginPaths.Any()) {
-                loaders = loaders.Concat(opts.PluginPaths.SelectMany(p => GetPluginLoaders(p)));
-            }
+            var loaders = new PluginLoadBuilder()
+                .UseConfiguration(configuration.GetSection("Relay"))
+                .UseConsoleLogging()
+                .Build();
             // Create an instance of plugin types
             foreach (var loader in loaders)
             {
@@ -51,6 +51,7 @@ namespace ModMetaRelay
             // create plugin loaders
             var pluginsDir = pluginSearchPath ?? Path.Combine(AppContext.BaseDirectory, "plugins");
             Console.WriteLine($"Loading all plugins from {pluginsDir}");
+            if (!Directory.Exists(pluginsDir)) return new List<PluginLoader>();
             foreach (var dir in Directory.GetDirectories(pluginsDir))
             {
                 var dirName = Path.GetFileName(dir);

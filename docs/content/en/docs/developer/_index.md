@@ -1,7 +1,7 @@
 ---
 title: "Developer Guide"
 linkTitle: "Development"
-weight: 10
+weight: 90
 description: >
   An introduction to ModMeta Relay's design and how to contribute.
 ---

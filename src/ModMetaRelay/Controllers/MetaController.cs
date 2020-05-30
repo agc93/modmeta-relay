@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using static System.Linq.AsyncEnumerable;
-using static System.Console;
 using Microsoft.AspNetCore.Mvc;
 using ModMeta.Core;
 using System.Collections.Generic;
@@ -21,23 +19,10 @@ namespace ModMetaRelay.Controllers
         public MetaController(IEnumerable<IModMetaSource> sources, ILogger<MetaController> logger)
         {
             Sources = sources;
-            _logger = logger;
-        }
-
-        private async IAsyncEnumerable<IEnumerable<ILookupResult>> GetResults(Func<IModMetaSource, Task<IEnumerable<ILookupResult>>> searchFunc) {
             if (!Sources.Any()) {
-                // return new List<ILookupResult>();
-                // return null;
-            } else {
-                var results = new List<IEnumerable<ILookupResult>>();
-                foreach (var source in Sources)
-                {
-                    var result = await searchFunc(source);
-                    yield return result;
-                    results.Add(result);
-                }
-                // return results;
+                logger.LogWarning("No metadata sources configured! If no plugins are loaded, queries will always return empty results");
             }
+            _logger = logger;
         }
 
         private async Task<IEnumerable<ILookupResult>> GetAllSources(Func<IModMetaSource, Task<IEnumerable<ILookupResult>>> searchFunc) {
@@ -114,7 +99,6 @@ namespace ModMetaRelay.Controllers
     internal static class MetaExtensions {
         internal static bool Supports(this IModMetaSource s, LookupType type) {
             return s.SupportedTypes.HasFlag(type);
-            // return (s.SupportedTypes & type) == type;
         }
     }
 }
