@@ -16,9 +16,10 @@ Task("Publish-NuGet-Packages")
 .WithCriteria(() => !string.IsNullOrWhiteSpace(EnvironmentVariable("NUGET_TOKEN")))
 .WithCriteria(() => EnvironmentVariable("GITHUB_REF").StartsWith("refs/tags/v"))
 .Does(() => {
-    var nupkgDir = $"{artifacts}/nuget/";
+    var nupkgDir = $"{artifacts}nuget";
     var nugetToken = EnvironmentVariable("NUGET_TOKEN");
-    NuGetPush(GetFiles($"{nupkgDir}/*.nupkg"), new NuGetPushSettings {
+    var pkgFiles = GetFiles($"{nupkgDir}/*.nupkg");
+    NuGetPush(pkgFiles, new NuGetPushSettings {
       Source = "https://api.nuget.org/v3/index.json",
       ApiKey = nugetToken
     });
