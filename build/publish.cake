@@ -1,3 +1,5 @@
+#tool "nuget:https://api.nuget.org/v3/index.json?package=nuget.commandline&version=5.5.1"
+
 Task("Publish-Docker-Image")
 .IsDependentOn("Build-Docker-Image")
 .WithCriteria(() => !string.IsNullOrWhiteSpace(EnvironmentVariable("QUAY_TOKEN")))

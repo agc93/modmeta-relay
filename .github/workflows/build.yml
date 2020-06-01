@@ -35,9 +35,16 @@ jobs:
         QUAY_USER: modmeta-relay+github
         NUGET_TOKEN: ${{secrets.NUGET_TOKEN}}
     - uses: actions/upload-artifact@v1
+      name: Upload Relay Server
       with:
         name: modmeta-relay
         path: dist/publish/
+    - uses: actions/upload-artifact@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      name: Upload Plugins
+      with:
+        name: modmeta-plugins
+        path: dist/plugins/
     - uses: actions/upload-artifact@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
@@ -55,7 +62,6 @@ jobs:
         path: assets/
     - name: Create Release
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
       with: 
         files: |
           ./assets/*.zip
