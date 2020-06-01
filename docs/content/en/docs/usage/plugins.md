@@ -12,7 +12,7 @@ If you run the ModMeta Relay server without any plugins configured, you will nev
 
 ## Installing Plugins
 
-There's no special process for "installing" plugins or registering them to the server. Simply place them in a `Plugins/` directory beside the server binary and the server will automatically load them. Plugins must be in a *directory* named the same as the plugin. For example:
+There's no special process for "installing" plugins or registering them to the server. Simply place them in a `plugins/` directory beside the server binary and the server will automatically load them. Plugins must be in a *directory* named the same as the plugin. For example:
 
 ```bash
 win-x64
@@ -20,7 +20,7 @@ win-x64
     ├── appsettings.json
     ├── ModMetaRelay.exe
     ├── ModMetaRelay.pdb
-    └── Plugins
+    └── plugins
         └── ModMeta.BeatVortex
             ├── ModMeta.BeatVortex.dll
             ├── ModMeta.BeatVortex.deps.json
@@ -33,9 +33,11 @@ win-x64
 
 If your plugin doesn't seem to be loading with the server, make sure you check the output/logs. During startup the server will log the locations of plugins it has discovered as well as the paths it is searching.
 
+It's also possible to load multiple copies of the same plugin! If it appears in multiple search locations, the Relay server will load it from each location as all plugins are isolated from each other.
+
 ## Plugin Configuration
 
-The Relay server picks up it's configuration from the `appSettings.json` file in the app directory. If you need to put your plugins in a different location, you can add extra paths for plugins using the `PluginPaths` option:
+The Relay server (optionally) picks up it's configuration from a `modmeta.json` file in the app directory. If you need to put your plugins in a different location, you can add extra paths for plugins using the `PluginPaths` option:
 
 ```json
 {

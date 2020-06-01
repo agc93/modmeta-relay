@@ -11,7 +11,6 @@ using Version = SemVer.Version;
 
 namespace ModMeta.BeatVortex
 {
-    // [Plugin(PluginType = typeof(IModMetaSource))]
     public class BeatModsSource : IModMetaSource, IModMetaPlugin
     {
         private readonly BeatModsClient _client;
@@ -29,7 +28,15 @@ namespace ModMeta.BeatVortex
 
         public string DefaultGameId => "beatsaber";
 
-        public LookupType SupportedTypes => LookupType.LogicalName;
+        public LookupType SupportedTypes => LookupType.LogicalName|LookupType.FileExpression;
+
+        private IEnumerable<ILookupResult> SortMatches(IEnumerable<BeatModsEntry> matches) {
+            if (matches.Any()) {
+                return matches.OrderByDescending(m => new Version(m.Version)).Select(m => new BeatModsLookupResult(m));
+            } else {
+                return new List<ILookupResult>();
+            }
+        }
 
         public IServiceCollection ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
@@ -45,9 +52,11 @@ namespace ModMeta.BeatVortex
             return mods.Select(m => m.ToModInfo());
         }
 
-        public Task<IEnumerable<ILookupResult>> GetByExpression(string fileExpression, VersionMatch versionMatch)
+        public async Task<IEnumerable<ILookupResult>> GetByExpression(string fileExpression, VersionMatch versionMatch)
         {
-            throw new NotImplementedException();
+            var mods = await _client.GetModsByPattern(fileExpression);
+            var matches = mods.Where(m => m.MatchesVersion(versionMatch));
+            return SortMatches(matches);
         }
 
         public Task<IEnumerable<ILookupResult>> GetByKey(string hashKey)

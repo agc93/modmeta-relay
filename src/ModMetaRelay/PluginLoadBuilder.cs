@@ -36,8 +36,8 @@ namespace ModMetaRelay
 
         private IEnumerable<string> GetDefaultPaths() {
             return new List<string> {
-                Path.Combine(AppContext.BaseDirectory, "Plugins"),
-                Path.Combine(Environment.CurrentDirectory, "Plugins")
+                Path.Combine(AppContext.BaseDirectory, "plugins"),
+                Path.Combine(Environment.CurrentDirectory, "plugins")
             };
         }
 
@@ -105,7 +105,7 @@ namespace ModMetaRelay
             // var pluginsDir = pluginSearchPath ?? Path.Combine(AppContext.BaseDirectory, "plugins");
             _loggerFunc?.Invoke($"Loading all plugins from {pluginsDir}");
             if (!Directory.Exists(pluginsDir)) return new List<PluginLoader>();
-            foreach (var dir in Directory.GetDirectories(pluginsDir))
+            foreach (var dir in Directory.GetDirectories(pluginsDir).Distinct())
             {
                 var dirName = Path.GetFileName(dir);
                 var pluginDll = Path.Combine(dir, dirName + ".dll");

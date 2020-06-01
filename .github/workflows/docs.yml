@@ -5,7 +5,12 @@ name: Docs CI Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, develop ]
+    paths:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    branches: [ develop ]
     paths:
       - "docs/**"
       - ".github/workflows/docs.yml"

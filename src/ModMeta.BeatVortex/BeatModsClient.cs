@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Abstractions;
 using Microsoft.Extensions.Caching.InMemory;
@@ -62,6 +63,12 @@ namespace ModMeta.BeatVortex
         public async Task<IEnumerable<BeatModsEntry>> GetModsByName(string name) {
             var mods = await GetMods(await GetLatestGameVersion());
             return mods.Where(m => m.Name.ToLower().Contains(name.ToLower()));
+        }
+
+        public async Task<IEnumerable<BeatModsEntry>> GetModsByPattern(string regexPattern) {
+            var mods = await GetMods(await GetLatestGameVersion());
+            var regex = new System.Text.RegularExpressions.Regex(regexPattern, RegexOptions.IgnoreCase);
+            return mods.Where(m => regex.Match(m.Name).Success);
         }
 
         public async Task<BeatModsEntry> GetLatestModByName(string name, string version = null) {
