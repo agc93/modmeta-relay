@@ -9,6 +9,11 @@ on:
     paths:
       - "docs/**"
       - ".github/workflows/docs.yml"
+  pull_request:
+    branches: [ develop ]
+    paths:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
 
 jobs:
   build:
