@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using ModMeta.Core;
 using ModMeta.Core.Rules;
+using Range = SemVer.Range;
 
 namespace ModMeta.BeatVortex
 {
@@ -31,6 +32,10 @@ namespace ModMeta.BeatVortex
                 }).Cast<IRule>().ToList();
             }
             return info;
+        }
+
+        internal static bool MatchesVersion(this BeatModsEntry m, VersionMatch version) {
+            return ((Range)version).IsSatisfied(m.Version);
         }
     }
 }

@@ -21,6 +21,8 @@ namespace ModMetaRelay.Controllers
             Sources = sources;
             if (!Sources.Any()) {
                 logger.LogWarning("No metadata sources configured! If no plugins are loaded, queries will always return empty results");
+            } else {
+                logger.LogDebug("Loaded metadata sources!");
             }
             _logger = logger;
         }

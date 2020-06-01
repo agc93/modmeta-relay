@@ -26,7 +26,7 @@ The server will be immediately ready to serve mod requests at whatever port you 
 
 ### Native Packages
 
-We also publish native builds for Windows and Linux through [GitHub Releases](https://github.com/agc93/modmeta-relay/releases). Find the release you want to use, download the correct `.zip` for your platform and extract it somewhere. Create a `Plugins` directory and drop in your plugins, and run `ModMetaRelay`/`ModMetaRelay.exe` to start the server. You can change the listening port in `appSettings.json`, by adding a new key to the configuration:
+We also publish native builds for Windows and Linux through [GitHub Releases](https://github.com/agc93/modmeta-relay/releases). Find the release you want to use, download the correct `.zip` for your platform and extract it somewhere. Create a `plugins` directory and drop in your plugins, and run `ModMetaRelay`/`ModMetaRelay.exe` to start the server. You can change the listening port in `appSettings.json`, by adding a new key to the configuration:
 
 ```json
 "urls":"https://0.0.0.0:8888"
