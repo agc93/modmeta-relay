@@ -16,6 +16,7 @@ namespace ModMeta.BeatVortex
                 // SourceUrl = new Uri($"https://beatmods.com/api/v1/mod/{entry.DocumentId}"),
                 SourceUrl = new Uri($"https://beatmods.com{entry.Downloads.First().Url}"),
                 Source = "beatmods",
+                FileName = System.IO.Path.GetFileName(entry.Downloads.First().Url),
                 LogicalFileName = entry.Name,
                 Expires = DateTime.UtcNow.AddHours(24).Ticks,
                 Details = new ModDetails {

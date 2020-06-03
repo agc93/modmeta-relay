@@ -27,6 +27,7 @@ var projects = GetProjects(solutionPath, configuration);
 var artifacts = "./dist/";
 var testResultsPath = MakeAbsolute(Directory(artifacts + "./test-results"));
 var PackagedRuntimes = new List<string> { "centos", "ubuntu", "debian", "fedora", "rhel" };
+var plugins = new List<string> { "ModMeta.BeatVortex" };
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -142,6 +143,20 @@ Task("Publish-Runtime")
     }
 });
 
+Task("Publish-Plugins")
+	.IsDependentOn("Post-Build")
+	.Does(() =>
+{
+	var pluginsDir = $"{artifacts}plugins";
+	CreateDirectory(pluginsDir);
+	foreach(var project in projects.SourceProjects.Where(p => plugins.Contains(p.Name))) {
+		DotNetCorePublish(project.Path.FullPath, new DotNetCorePublishSettings {
+			OutputDirectory = pluginsDir + "/" + project.Name,
+			Configuration = configuration
+		});
+	}
+});
+
 Task("Build-Linux-Packages")
 	.IsDependentOn("Publish-Runtime")
 	.WithCriteria(IsRunningOnUnix())
@@ -208,6 +223,7 @@ Task("Default")
     .IsDependentOn("Post-Build");
 
 Task("Publish")
+	.IsDependentOn("Publish-Plugins")
 	.IsDependentOn("Build-Linux-Packages")
 	.IsDependentOn("Build-NuGet-Packages")
 	.IsDependentOn("Build-Docker-Image");
