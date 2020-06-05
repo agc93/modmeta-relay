@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using ModMeta.Core;
 using SemVer;
 using Range = SemVer.Range;
@@ -11,7 +9,7 @@ using Version = SemVer.Version;
 
 namespace ModMeta.BeatVortex
 {
-    public class BeatModsSource : IModMetaSource, IModMetaPlugin
+    public class BeatModsSource : IModMetaSource
     {
         private readonly BeatModsClient _client;
 
@@ -36,14 +34,6 @@ namespace ModMeta.BeatVortex
             } else {
                 return new List<ILookupResult>();
             }
-        }
-
-        public IServiceCollection ConfigureServices(IServiceCollection services, IConfiguration configuration)
-        {
-            
-            services.AddSingleton<BeatModsClient>();
-            services.AddSingleton<IModMetaSource, BeatModsSource>();
-            return services;
         }
 
         public async Task<IEnumerable<IModInfo>> GetAllMods()

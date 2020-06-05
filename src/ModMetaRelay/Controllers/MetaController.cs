@@ -66,6 +66,11 @@ namespace ModMetaRelay.Controllers
             return new List<ILookupResult>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileHash"></param>
+        /// <returns></returns>
         [HttpGet("by_key/{fileHash}")]
         public async Task<IActionResult> GetByFileHash([FromRoute]string fileHash) {
             _logger.LogDebug($"Hit GetByFileHash with {fileHash}");
