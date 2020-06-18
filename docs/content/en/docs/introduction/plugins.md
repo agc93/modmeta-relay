@@ -14,6 +14,6 @@ Plugins can selectively support only parts of the ModMeta API if the source they
 
 ## Plugin Loading
 
-Plugins are automatically loaded (by default) from a `plugins/` directory in the application root. Plugins must be located in a directory under *plugins* with the same name as the plugin assembly (without the `.dll`). Each plugin can add one or more metadata sources and the server will automatically load all of them and use them to retrieve metadata from requests.
+Plugins are automatically loaded (by default) from a `plugins/` directory in the application root. Plugins must be located in a directory under `plugins` with the same name as the plugin assembly (without the `.dll`). Each plugin can add one or more metadata sources and the server will automatically load all of them and use them to retrieve metadata from requests.
 
 For more detail, check out the [usage docs](/docs/usage/plugins).
