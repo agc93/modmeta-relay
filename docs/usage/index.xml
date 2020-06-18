@@ -25,7 +25,6 @@ dotnet cake --target&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>P
 &lt;h2 id="installing-plugins">Installing Plugins&lt;/h2>
 &lt;p>There's no special process for &amp;ldquo;installing&amp;rdquo; plugins or registering them to the server. Simply place them in a &lt;code>plugins/&lt;/code> directory beside the server binary and the server will automatically load them. Plugins must be in a &lt;em>directory&lt;/em> named the same as the plugin. For example:&lt;/p>
 &lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">win-x64
-├── appsettings.Development.json
 ├── appsettings.json
 ├── ModMetaRelay.exe
 ├── ModMetaRelay.pdb
@@ -76,4 +75,6 @@ docker run -d -p 8080:80 -v /tmp/modmeta-plugins:/app/plugins quay.io/modmeta-re
 &lt;span style="color:#000;font-weight:bold">}&lt;/span>
 &lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>
 &lt;span style="color:#000;font-weight:bold">}&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>A word of warning: Vortex versions prior to 1.12.3 had &lt;a href="https://github.com/Nexus-Mods/Vortex/issues/6315">a nasty bug&lt;/a> that meant programmatically removing a metaserver would lead to weird stuff.&lt;/p>
+&lt;/blockquote></description></item></channel></rss>
