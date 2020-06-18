@@ -87,6 +87,7 @@ Task("Build")
 	var settings = new DotNetCoreBuildSettings {
 		Configuration = configuration,
 		NoIncremental = true,
+		ArgumentCustomization = args => args.Append($"/p:Version={packageVersion}")
 	};
 	DotNetCoreBuild(solutionPath, settings);
 });

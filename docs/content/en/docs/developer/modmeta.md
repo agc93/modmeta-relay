@@ -16,7 +16,7 @@ This is the "default" request used by Vortex, and the only request supported by 
 
 #### Logical File Name (`by_name`)
 
-This is the next-best request, not as specific as file key, but not as vague or intensive as expression. Technically speaking, the logical file name is just a string, but it's usually a string that's semantically important to the mod, such as a unique name for a specific variant of a file.
+This is the next-best request, not as specific as file key, but not as vague or intensive as expressions. Technically speaking, the logical file name is just a string, but it's usually a string that's semantically important to the mod, such as a unique name for a specific variant of a file.
 
 > Logical file name lookups also use version matching
 

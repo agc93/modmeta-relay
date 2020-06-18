@@ -16,7 +16,6 @@ There's no special process for "installing" plugins or registering them to the s
 
 ```bash
 win-x64
-    ├── appsettings.Development.json
     ├── appsettings.json
     ├── ModMetaRelay.exe
     ├── ModMetaRelay.pdb

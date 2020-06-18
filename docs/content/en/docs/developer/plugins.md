@@ -14,7 +14,7 @@ The `IModMetaSource` interface is how the Relay server passes mod metadata queri
 
 ## Implementing a metadata source
 
-In short, add a reference to `ModMeta.Core` and implement the `IModMetaSource` interface. The various `GetBy*` methods are the main entry points the server will call when it gets a request for a mod.
+In short, add a reference to [`ModMeta.Core`](https://www.nuget.org/packages/ModMeta/) and implement the `IModMetaSource` interface. The various `GetBy*` methods are the main entry points the server will call when it gets a request for a mod.
 
 ### Request Type Support
 
@@ -32,7 +32,7 @@ If your mod has more advanced requirements or you want to take advantage of runt
 
 > If you use `IModMetaPlugin`, the server will *not* automatically register your `IModMetaSource` implementation, you need to do that yourself in the `ConfigureServices` method.
 
-Using the `IModMetaPlugin.ConfigureServices` method, you can register any dependencies you need, read configuration or resolve extra services from the DI container of the host serve. For example:
+Using the `IModMetaPlugin.ConfigureServices` method, you can register any dependencies you need, read configuration or resolve extra services from the DI container of the host server. For example:
 
 ```csharp
 public IServiceCollection ConfigureServices(IServiceCollection services, IConfiguration configuration)

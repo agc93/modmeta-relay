@@ -37,3 +37,5 @@ function main(context : IExtensionContext) {
     ...
 }
 ```
+
+> A word of warning: Vortex versions prior to 1.12.3 had [a nasty bug](https://github.com/Nexus-Mods/Vortex/issues/6315) that meant programmatically removing a metaserver would lead to weird stuff.

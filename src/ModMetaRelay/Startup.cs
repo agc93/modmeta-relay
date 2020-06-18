@@ -21,6 +21,9 @@ namespace ModMetaRelay
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<RelayOptions>(Configuration.GetSection("Relay"));
+            if (Configuration.GetSection("RateLimiting").Exists()) {
+                services.AddThrottlingServices(Configuration.GetSection("RateLimiting"));
+            }
             services.AddPlugins(Configuration);
             // services.AddSingleton<IModMetaSource, ModMeta.BeatVortex.BeatModsSource>();
             services
@@ -40,6 +43,10 @@ namespace ModMetaRelay
             }
 
             app.UseHttpsRedirection();
+
+            if (Configuration.GetSection("RateLimiting").Exists()) {
+                app.UseThrottling();
+            }
 
             app.UseRouting();
 

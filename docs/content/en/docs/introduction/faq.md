@@ -8,7 +8,7 @@ Below is a collection of frequent questions and the best answers I can give.
 
 ### Why should I use this?
 
-If your integration/extension/game/mod are using Vortex and mods hosted on Nexus Mods, you probably don't need this! ModMeta Relay is specifically intended at making it easier to support non-Nexus mod sources with metadata for Vortex (or any other ModMeta client).
+If your integration/extension/game/mod is using Vortex and mods hosted on Nexus Mods, you probably don't need this! ModMeta Relay is specifically intended at making it easier to support non-Nexus mod sources with metadata for Vortex (or any other ModMeta client).
 
 ### Why not just use modmeta-db?
 
