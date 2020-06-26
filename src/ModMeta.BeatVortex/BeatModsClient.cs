@@ -51,7 +51,10 @@ namespace ModMeta.BeatVortex
         }
 
         private async Task<string> GetLatestGameVersion() {
-            var mods = await GetMods();
+            // var mods = await GetMods();
+            var url = "mod?name=BSIPA&status=approved&sort=updatedDate";
+            var str = await _client.GetStringAsync(url);
+            var mods = JsonSerializer.Deserialize<List<BeatModsEntry>>(str, options);
             var versions = mods.Select(m => m.GameVersion).Where(gv => Version.TryParse(gv, out _)).Select(v => Version.Parse(v)).OrderByDescending(v => v);
             return versions.First().ToString();
         }
