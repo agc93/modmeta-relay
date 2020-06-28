@@ -9,6 +9,7 @@ namespace ModMeta.BeatVortex
         public IServiceCollection ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<Microsoft.Extensions.Caching.InMemory.IMemoryCache, Microsoft.Extensions.Caching.InMemory.MemoryCache>();
+            services.AddSingleton<HttpClientFactory>();
             services.AddSingleton<BeatModsClient>();
             services.AddSingleton<IModMetaSource, BeatModsSource>();
             var section = configuration.GetSection("BeatVortex");

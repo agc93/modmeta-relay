@@ -19,7 +19,7 @@ namespace ModMeta.BeatVortex
         private readonly JsonSerializerOptions options;
         private readonly IMemoryCache _cache;
 
-        public BeatModsClient(HttpClient client, IMemoryCache cache) : this()
+        public BeatModsClient(HttpClientFactory clientFactory, IMemoryCache cache) : this(clientFactory)
         {
             _cache = cache;
             if (_cache != null) {
@@ -52,18 +52,10 @@ namespace ModMeta.BeatVortex
             return opts;
         }
 
-        public BeatModsClient()
+        public BeatModsClient(HttpClientFactory clientFactory)
         {
-            var handler = new HttpClientHandler {
-                AllowAutoRedirect = true
-            };
             options = GetJsonOptions();
-            var cacheExpirationPerHttpResponseCode = CacheExpirationProvider.CreateSimple(TimeSpan.FromHours(6), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(60));
-            var cacheHandler = new InMemoryCacheHandler(handler, cacheExpirationPerHttpResponseCode);
-            this._client = new HttpClient(cacheHandler);
-            _client.DefaultRequestHeaders.UserAgent.ParseAdd("BeatVortex/0.3");
-            _client.BaseAddress = new Uri("https://beatmods.com/api/v1/");
-            // LatestGameVersion = GetLatestGameVersion().GetAwaiter().GetResult();
+            this._client = clientFactory.GetCachedClient(new Uri("https://beatmods.com/api/v1/"));
         }
 
         private async Task<IEnumerable<BeatModsEntry>> GetMods(string gameVersion = null) {

@@ -15,7 +15,7 @@ namespace ModMeta.BeatVortex
 
         public BeatModsSource()
         {
-            _client = new BeatModsClient();
+            _client = new BeatModsClient(new HttpClientFactory());
         }
 
         public BeatModsSource(BeatModsClient client)
