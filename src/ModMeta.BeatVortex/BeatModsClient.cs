@@ -17,6 +17,31 @@ namespace ModMeta.BeatVortex
         private readonly HttpClient _client;
         private string LatestGameVersion {get;}
         private readonly JsonSerializerOptions options;
+        private readonly IMemoryCache _cache;
+
+        public BeatModsClient(HttpClientFactory clientFactory, IMemoryCache cache) : this(clientFactory)
+        {
+            _cache = cache;
+            if (_cache != null) {
+                Task.Run(() => this.CacheLatestGameVersion()).Wait();
+            }
+        }
+
+        private async Task CacheLatestGameVersion() {
+            if (!_cache.TryGetValue("_gameVersion", out var cacheEntry))
+            {
+                // Key not in cache, so get data.
+                cacheEntry = await GetLatestGameVersion();
+
+                // Set cache options.
+                var cacheEntryOptions = new MemoryCacheEntryOptions() {
+                    SlidingExpiration = TimeSpan.FromHours(12)
+                };
+
+                // Save data in cache.
+                _cache.Set("_gameVersion", cacheEntry, cacheEntryOptions);
+            }
+        }
 
         internal static JsonSerializerOptions GetJsonOptions() {
             var opts = new JsonSerializerOptions
@@ -27,18 +52,10 @@ namespace ModMeta.BeatVortex
             return opts;
         }
 
-        public BeatModsClient()
+        public BeatModsClient(HttpClientFactory clientFactory)
         {
-            var handler = new HttpClientHandler {
-                AllowAutoRedirect = true
-            };
             options = GetJsonOptions();
-            var cacheExpirationPerHttpResponseCode = CacheExpirationProvider.CreateSimple(TimeSpan.FromHours(6), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(60));
-            var cacheHandler = new InMemoryCacheHandler(handler, cacheExpirationPerHttpResponseCode);
-            this._client = new HttpClient(cacheHandler);
-            _client.DefaultRequestHeaders.UserAgent.ParseAdd("BeatVortex/0.3");
-            _client.BaseAddress = new Uri("https://beatmods.com/api/v1/");
-            LatestGameVersion = GetLatestGameVersion().GetAwaiter().GetResult();
+            this._client = clientFactory.GetCachedClient(new Uri("https://beatmods.com/api/v1/"));
         }
 
         private async Task<IEnumerable<BeatModsEntry>> GetMods(string gameVersion = null) {
@@ -51,7 +68,13 @@ namespace ModMeta.BeatVortex
         }
 
         private async Task<string> GetLatestGameVersion() {
-            var mods = await GetMods();
+            if (_cache != null && _cache.TryGetValue<string>("_gameVersion", out var latestVersion)) {
+                return latestVersion;
+            }
+            // var mods = await GetMods();
+            var url = "mod?name=BSIPA&status=approved&sort=updatedDate";
+            var str = await _client.GetStringAsync(url);
+            var mods = JsonSerializer.Deserialize<List<BeatModsEntry>>(str, options);
             var versions = mods.Select(m => m.GameVersion).Where(gv => Version.TryParse(gv, out _)).Select(v => Version.Parse(v)).OrderByDescending(v => v);
             return versions.First().ToString();
         }
