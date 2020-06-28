@@ -37,6 +37,18 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "plugins",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/src/ModMeta.BeatVortex/ModMeta.BeatVortex.csproj",
+                "-o",
+                "${workspaceFolder}/src/ModMetaRelay/bin/Debug/netcoreapp3.1/plugins/ModMeta.BeatVortex/"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }

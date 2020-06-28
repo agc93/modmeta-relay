@@ -17,6 +17,31 @@ namespace ModMeta.BeatVortex
         private readonly HttpClient _client;
         private string LatestGameVersion {get;}
         private readonly JsonSerializerOptions options;
+        private readonly IMemoryCache _cache;
+
+        public BeatModsClient(HttpClient client, IMemoryCache cache) : this()
+        {
+            _cache = cache;
+            if (_cache != null) {
+                Task.Run(() => this.CacheLatestGameVersion()).Wait();
+            }
+        }
+
+        private async Task CacheLatestGameVersion() {
+            if (!_cache.TryGetValue("_gameVersion", out var cacheEntry))
+            {
+                // Key not in cache, so get data.
+                cacheEntry = await GetLatestGameVersion();
+
+                // Set cache options.
+                var cacheEntryOptions = new MemoryCacheEntryOptions() {
+                    SlidingExpiration = TimeSpan.FromHours(12)
+                };
+
+                // Save data in cache.
+                _cache.Set("_gameVersion", cacheEntry, cacheEntryOptions);
+            }
+        }
 
         internal static JsonSerializerOptions GetJsonOptions() {
             var opts = new JsonSerializerOptions
@@ -38,7 +63,7 @@ namespace ModMeta.BeatVortex
             this._client = new HttpClient(cacheHandler);
             _client.DefaultRequestHeaders.UserAgent.ParseAdd("BeatVortex/0.3");
             _client.BaseAddress = new Uri("https://beatmods.com/api/v1/");
-            LatestGameVersion = GetLatestGameVersion().GetAwaiter().GetResult();
+            // LatestGameVersion = GetLatestGameVersion().GetAwaiter().GetResult();
         }
 
         private async Task<IEnumerable<BeatModsEntry>> GetMods(string gameVersion = null) {
@@ -51,6 +76,9 @@ namespace ModMeta.BeatVortex
         }
 
         private async Task<string> GetLatestGameVersion() {
+            if (_cache != null && _cache.TryGetValue<string>("_gameVersion", out var latestVersion)) {
+                return latestVersion;
+            }
             // var mods = await GetMods();
             var url = "mod?name=BSIPA&status=approved&sort=updatedDate";
             var str = await _client.GetStringAsync(url);
