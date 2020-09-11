@@ -27,6 +27,15 @@ namespace ModMeta.BeatVortex
             return client;
         }
 
+        public HttpClient GetClient(Uri baseAddress = null, string userAgent = null) {
+            var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true });
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent ?? GetUserAgent());
+            if (baseAddress != null && !string.IsNullOrWhiteSpace(baseAddress.ToString())) {
+                client.BaseAddress = baseAddress;
+            }
+            return client;
+        }
+
         private string GetUserAgent() {
             return $"BeatVortex/{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}";
         }

@@ -13,11 +13,6 @@ namespace ModMeta.BeatVortex
     {
         private readonly BeatModsClient _client;
 
-        public BeatModsSource()
-        {
-            _client = new BeatModsClient(new HttpClientFactory());
-        }
-
         public BeatModsSource(BeatModsClient client)
         {
             _client = client;
