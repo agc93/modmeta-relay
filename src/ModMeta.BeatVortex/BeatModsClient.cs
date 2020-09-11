@@ -41,7 +41,8 @@ namespace ModMeta.BeatVortex
 
                 // Set cache options.
                 var cacheEntryOptions = new MemoryCacheEntryOptions() {
-                    SlidingExpiration = TimeSpan.FromHours(12)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6)
+                    // SlidingExpiration = TimeSpan.FromHours(12)
                 };
 
                 // Save data in cache.
