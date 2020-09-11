@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ModMeta.Core;
 using ModMeta.Core.Rules;
 using Range = SemVer.Range;
@@ -9,7 +10,7 @@ namespace ModMeta.BeatVortex
 {
     public static class BeatModsExtensions
     {
-        internal static IModInfo ToModInfo(this BeatModsEntry entry) {
+        internal static IModInfo ToModInfo(this BeatModsEntry entry, JsonSerializerOptions jsonOptions = null) {
             var info = new ModInfo {
                 GameId = "beatsaber",
                 FileVersion = entry.Version,
@@ -28,7 +29,7 @@ namespace ModMeta.BeatVortex
                 }
             };
             if (entry.Dependencies.Any(e => e.TryGetProperty("name", out _))) {
-                info.Rules = entry.Dependencies.Select(e => JsonSerializer.Deserialize<BeatModsEntry>(e.GetRawText(), BeatModsClient.GetJsonOptions())).Select(d => {
+                info.Rules = entry.Dependencies.Select(e => JsonSerializer.Deserialize<BeatModsEntry>(e.GetRawText(), jsonOptions ?? GetJsonOptions())).Select(d => {
                     return new BasicRule {Reference = new BeatModsModReference(d.Name, d.Version), Type = RuleType.Requires };
                 }).Cast<IRule>().ToList();
             }
@@ -37,6 +38,15 @@ namespace ModMeta.BeatVortex
 
         internal static bool MatchesVersion(this BeatModsEntry m, VersionMatch version) {
             return ((Range)version).IsSatisfied(m.Version);
+        }
+
+        internal static JsonSerializerOptions GetJsonOptions() {
+            var opts = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+                opts.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            return opts;
         }
     }
 }
