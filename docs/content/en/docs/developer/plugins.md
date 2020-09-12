@@ -32,7 +32,7 @@ If your mod has more advanced requirements or you want to take advantage of runt
 
 > If you use `IModMetaPlugin`, the server will *not* automatically register your `IModMetaSource` implementation, you need to do that yourself in the `ConfigureServices` method.
 
-Using the `IModMetaPlugin.ConfigureServices` method, you can register any dependencies you need, read configuration or resolve extra services from the DI container of the host server. For example:
+Using the `IModMetaPlugin.ConfigureServices` method, you can register any dependencies you need or read configuration from the host server. For example:
 
 ```csharp
 public IServiceCollection ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -42,3 +42,5 @@ public IServiceCollection ConfigureServices(IServiceCollection services, IConfig
     return services;
 }
 ```
+
+It's worth noting that (with some exceptions) you won't be able to access all the services from the host server's DI container. The exceptions to this are `IConfiguration` and `ILogger`. This means you can add the `Microsoft.Extensions.Logging` package to your plugin then just inject `ILogger<>` into any of your plugin types to write out logs.

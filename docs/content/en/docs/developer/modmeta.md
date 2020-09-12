@@ -30,6 +30,6 @@ File expressions are, essentially, glob patterns. That makes them very flexible 
 
 Lookups using logical file name or file expression also use a version string to match specific versions of a file. Version matches are not (necessarily) an exact match and are best specified as a version range.
 
-If you've used Node/`npm` and it's version semantics before, that's how `modmeta-db` does its version matching. ModMeta Relay tries to match that as closely as possible, but for those curious, existing plugins are using [semver.net (Sematnic Versioning for .NET)](https://github.com/adamreeve/semver.net) for version matching.
+If you've used Node/`npm` and it's version semantics before, that's how `modmeta-db` does its version matching. ModMeta Relay tries to match that as closely as possible, but for those curious, existing plugins are using [semver.net (Semantic Versioning for .NET)](https://github.com/adamreeve/semver.net) for version matching.
 
 The actual implementation of matching version strings with mod package/file versions is up to plugins, but should always be as specific as practical since returning too many results for a mod can result in conflicting metadata.
