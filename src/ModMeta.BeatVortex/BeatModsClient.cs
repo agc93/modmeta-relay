@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Abstractions;
 using Microsoft.Extensions.Caching.InMemory;
+using Microsoft.Extensions.Logging;
 
 namespace ModMeta.BeatVortex
 {
@@ -22,19 +23,20 @@ namespace ModMeta.BeatVortex
 
         private string LatestGameVersion {get;}
         private readonly JsonSerializerOptions options;
-        
+        private readonly ILogger<BeatModsClient> _logger;
         private readonly IVersionProvider _versionProvider;
         private readonly IMemoryCache _cache;
 
-        public BeatModsClient(HttpClientFactory clientFactory, IMemoryCache cache, JsonSerializerOptions options, IVersionProvider versionProvider)
+        public BeatModsClient(HttpClientFactory clientFactory, IMemoryCache cache, JsonSerializerOptions options, IVersionProvider versionProvider, Microsoft.Extensions.Logging.ILogger<BeatModsClient> logger)
         {
             this._client = clientFactory.GetClient(new Uri("https://beatmods.com/api/v1/"));
             _cache = cache;
+            _logger = logger;
             _versionProvider = versionProvider;
+            this.options = options;
             if (_cache != null) {
                 Task.Run(() => this.CacheLatestGameVersion()).Wait();
             }
-            this.options = options;
         }
 
         private async Task CacheLatestGameVersion() {
@@ -49,12 +51,15 @@ namespace ModMeta.BeatVortex
                     // SlidingExpiration = TimeSpan.FromHours(12)
                 };
 
+                _logger.LogInformation($"Caching latest game version at '{cacheEntry}' for 6 hours");
+
                 // Save data in cache.
                 _cache.Set(CacheKeys.GameVersion, cacheEntry, cacheEntryOptions);
             }
         }
 
         private void CacheAllMods(List<BeatModsEntry> mods) {
+            _logger.LogWarning("Rebuilding cache of all mods!");
             if (_cache != null) {
 
                 // Set cache options.
@@ -62,6 +67,7 @@ namespace ModMeta.BeatVortex
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6)
                     // SlidingExpiration = TimeSpan.FromHours(12)
                 };
+                _logger.LogDebug($"Caching {mods.Count} mods in memory for 6 hours");
 
                 // Save data in cache.
                 _cache.Set(CacheKeys.AllMods, mods, cacheEntryOptions);
@@ -75,6 +81,7 @@ namespace ModMeta.BeatVortex
                     : await _versionProvider.GetLatestVersion();
             }
             if (_cache != null && _cache.TryGetValue<List<BeatModsEntry>>(CacheKeys.AllMods, out var allMods)) {
+                _logger.LogDebug("Returning mods response from cache!");
                 return allMods;
             }
             var url = string.IsNullOrWhiteSpace(gameVersion)

@@ -114,7 +114,7 @@ namespace ModMetaRelay
                     _loggerFunc?.Invoke($"Plugin located! Loading {pluginDll}");
                     var loader = PluginLoader.CreateFromAssemblyFile(
                         pluginDll,
-                        sharedTypes: new[] { typeof(IModMetaPlugin), typeof(IServiceCollection) });
+                        sharedTypes: new[] { typeof(IModMetaPlugin), typeof(IServiceCollection), typeof(ILogger), typeof(ILogger<>) });
                     loaders.Add(loader);
                 }
             }
