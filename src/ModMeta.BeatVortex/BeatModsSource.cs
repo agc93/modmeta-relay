@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using ModMeta.Core;
 using SemVer;
 using Range = SemVer.Range;
@@ -12,10 +13,12 @@ namespace ModMeta.BeatVortex
     public class BeatModsSource : IModMetaSource
     {
         private readonly BeatModsClient _client;
+        private readonly ILogger<BeatModsSource> _logger;
 
-        public BeatModsSource(BeatModsClient client)
+        public BeatModsSource(BeatModsClient client, ILogger<BeatModsSource> logger)
         {
             _client = client;
+            _logger = logger;
         }
         public bool IsCaching => false;
 
@@ -53,6 +56,7 @@ namespace ModMeta.BeatVortex
         {
             var mods = await _client.GetModsByName(logicalName);
             var matches = mods.Where(m => ((Range)versionMatch).IsSatisfied(m.Version));
+            _logger.LogDebug($"Matched {matches.Count()}/{mods.Count()} mods from '{logicalName}'/'{versionMatch.ToString()}'");
             if (matches.Any()) {
                 return matches.OrderByDescending(m => new Version(m.Version)).Select(m => new BeatModsLookupResult(m));
             } else {
