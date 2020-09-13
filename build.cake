@@ -156,6 +156,8 @@ Task("Publish-Plugins")
 			Configuration = configuration
 		});
 	}
+	CreateDirectory($"{artifacts}archive");
+	Zip(pluginsDir, $"{artifacts}archive/modmeta-relay-plugins.zip");
 });
 
 Task("Build-Linux-Packages")
@@ -204,7 +206,7 @@ Task("Build-NuGet-Packages")
 });
 
 Task("Build-Docker-Image")
-	//.WithCriteria(IsRunningOnUnix())
+	.WithCriteria(IsRunningOnUnix())
 	.IsDependentOn("Build-Linux-Packages")
 	.Does(() =>
 {
