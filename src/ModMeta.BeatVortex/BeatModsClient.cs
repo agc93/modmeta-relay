@@ -81,7 +81,7 @@ namespace ModMeta.BeatVortex
                     : await _versionProvider.GetLatestVersion();
             }
             if (_cache != null && _cache.TryGetValue<List<BeatModsEntry>>(CacheKeys.AllMods, out var allMods)) {
-                _logger.LogDebug("Returning mods response from cache!");
+                _logger.LogDebug($"Returning {allMods.Count} mods response from cache!");
                 return allMods;
             }
             var url = string.IsNullOrWhiteSpace(gameVersion)

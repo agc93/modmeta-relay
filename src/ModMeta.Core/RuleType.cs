@@ -29,5 +29,10 @@ namespace ModMeta.Core
         public static explicit operator SemVer.Range(VersionMatch vm) {
             return new SemVer.Range(vm.rawMatch);
         }
+
+        public override string ToString()
+        {
+            return rawMatch;
+        }
     }
 }

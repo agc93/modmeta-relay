@@ -5,6 +5,7 @@ using ModMeta.Core;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ModMetaRelay.Controllers
 {
@@ -14,11 +15,13 @@ namespace ModMetaRelay.Controllers
     {
         public IEnumerable<IModMetaSource> Sources {get;set;}
 
+        private readonly RelayOptions _options;
         private readonly ILogger<MetaController> _logger;
 
-        public MetaController(IEnumerable<IModMetaSource> sources, ILogger<MetaController> logger)
+        public MetaController(IEnumerable<IModMetaSource> sources, ILogger<MetaController> logger, IOptions<RelayOptions> options)
         {
             Sources = sources;
+            _options = options.Value;
             if (!Sources.Any()) {
                 logger.LogWarning("No metadata sources configured! If no plugins are loaded, queries will always return empty results");
             } else {
@@ -31,7 +34,7 @@ namespace ModMetaRelay.Controllers
             var tasks = Sources.Select(s => searchFunc(s));
             try
             {
-                await Task.WhenAny(Task.WhenAll(tasks), Task.Delay(5000));
+                await Task.WhenAny(Task.WhenAll(tasks), Task.Delay(_options.Timeout));
                 var completions = tasks
                 .Where(t => t.Status == TaskStatus.RanToCompletion)
                 .SelectMany(t => t.Result);
@@ -48,7 +51,7 @@ namespace ModMetaRelay.Controllers
             var tasks = Sources.Where(sourceFilter).Select(s => searchFunc(s));
             try
             {
-                await Task.WhenAny(Task.WhenAll(tasks), Task.Delay(5000));
+                await Task.WhenAny(Task.WhenAll(tasks), Task.Delay(_options.Timeout));
                 var completions = tasks
                 .Where(t => t.Status == TaskStatus.RanToCompletion)
                 .SelectMany(t => t.Result);
@@ -58,11 +61,6 @@ namespace ModMetaRelay.Controllers
             {
                 //ignored
             }
-            // await Task.WhenAny(Task.WhenAll(tasks), Task.Delay(5000));
-            
-            // var allSources = await Task.WhenAll(Sources.Select(s => searchFunc(s)));
-            // var matches = allSources.SelectMany(s => s.ToList());
-            // return completions;
             return new List<ILookupResult>();
         }
 
